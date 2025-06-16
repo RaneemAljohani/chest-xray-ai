@@ -20,11 +20,12 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="صورة الأشعة المدخلة", use_column_width=True)
 
-    prompt = "indication: evaluation for suspected pneumonia and fracture"
+    prompt = "Generate a detailed chest X-ray report for pneumonia and fracture evaluation."
 
     if st.button("🔍 تحليل الصورة"):
         inputs = processor(images=image, text=prompt, return_tensors="pt", truncation=True)
-        out = model.generate(**inputs)
+        out = model.generate(**inputs, max_length=512, num_beams=5, early_stopping=True)
         report = processor.decode(out[0], skip_special_tokens=True)
         st.markdown("### 🧾 التقرير الناتج:")
         st.success(report)
+
